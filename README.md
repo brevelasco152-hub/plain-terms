@@ -10,76 +10,128 @@ Almost nobody reads the Terms & Conditions or Privacy Policy before accepting th
 
 PlainTerms surfaces the sections that tend to matter most, explains them in everyday language, and always shows the original clause so you can verify it yourself. It never scores or labels a company as "safe" or "unsafe" — it just helps you understand the agreement and decide for yourself.
 
-## MVP features
 
-- **Paste → Analyze → Understand** in a single, focused flow.
-- Results organized into **five categories**:
-  1. **Your Data** — what's collected, retention, deletion options
-  2. **Data Sharing** — third parties, advertisers, affiliates, selling, opt-outs
-  3. **Your Legal Rights** — arbitration, class-action / jury-trial waivers, deadlines
-  4. **Payments & Cancellation** — auto-renewal, trials, refunds, price changes
-  5. **Your Content & AI** — content licenses, ownership, AI/model-training
-- Each result shows a **status** (`Found`, `Nothing notable found`, or `Unclear`), a short plain-English **summary**, and an expandable **original clause** for verification.
-- **Claims are grounded in the provided text only** — every `Found` result includes the supporting clause copied verbatim. No invented clauses.
-- **Try a sample policy** button so anyone can test the app instantly.
-- **Demo mode**: if no API key is configured, the app still works using a built-in sample policy and realistic pre-written results (clearly labeled as demo data).
-- Polished, responsive design for desktop and mobile.
+## How It Works
 
-## Tech stack
+**1. Paste**
+Paste a Terms & Conditions or Privacy Policy into the scanner.
 
-- [Next.js](https://nextjs.org) (App Router)
-- TypeScript
-- Tailwind CSS
-- [shadcn/ui](https://ui.shadcn.com)
-- [Lucide](https://lucide.dev) icons
-- [AI SDK](https://ai-sdk.dev) with OpenAI for structured analysis + [Zod](https://zod.dev) for validation
+**2. Scan**
+The app analyzes the agreement for five specific categories.
 
-## How the AI integration works
+**3. Understand**
+Get a plain-English explanation of what was found and view the original clause for yourself.
 
-- Analysis runs **server-side only** in the `POST /api/analyze` route handler — the API key is never exposed to the client.
-- The model call is isolated in [`lib/analyze.ts`](./lib/analyze.ts) so you can swap the model or provider without touching the UI.
-- Output is generated as **structured JSON** constrained by a Zod schema and **validated** before it's returned to the client.
-- If `OPENAI_API_KEY` is not set, the route returns the built-in **demo** result instead.
+## What It Looks For
 
-## Local setup
+### 🔒 Your Data
 
-Requirements: Node.js 18.18+ and npm (or pnpm).
+Looks for what personal information the service collects, including things like location, activity, device information, purchase information, data retention, and deletion options.
+
+### 🤝 Data Sharing
+
+Looks for whether information may be shared or sold to advertisers, partners, affiliates, analytics providers, or other third parties.
+
+### ⚖️ Your Legal Rights
+
+Looks for clauses involving mandatory arbitration, class-action waivers, jury-trial waivers, and other dispute requirements.
+
+### 💳 Payments & Cancellation
+
+Looks for automatic renewals, trial-to-paid conversions, cancellation requirements, refund restrictions, fees, and price changes.
+
+### 📸 Your Content & AI
+
+Looks for what rights a service receives over content you upload, whether you keep ownership, and whether your content or data may be used for AI or model training.
+
+## Results
+
+Instead of giving an agreement an arbitrary “safety score,” Terms Scanner uses three simple statuses:
+
+* **Found** — relevant language was identified
+* **Nothing notable found** — no relevant language was identified in the provided text
+* **Unclear** — the wording could not be confidently interpreted
+
+When something is found, the app also displays the original clause that led to the result.
+
+The goal isn't to decide whether a company is “good” or “bad.” It's to help users find the parts of an agreement they might actually want to read.
+
+## Demo Mode
+
+Don't have a 40-page Terms & Conditions document ready?
+
+The app includes a sample policy so the full scanning experience can be tested immediately.
+
+**[Try the Live Demo]((https://terms-and-conditions-analyzer-mu.vercel.app/))**
+
+## Tech Stack
+
+* Next.js
+* TypeScript
+* Tailwind CSS
+* shadcn/ui
+* OpenAI API
+* Vercel
+
+## Running Locally
+
+Clone the repository:
 
 ```bash
-# 1. Install dependencies
+git clone YOUR_GITHUB_REPO_URL
+cd YOUR_PROJECT_FOLDER
+```
+
+Install dependencies:
+
+```bash
 npm install
+```
 
-# 2. Set up environment variables
-cp .env.example .env.local
-# then edit .env.local and add your OpenAI key (optional — leave blank for demo mode)
+Create a `.env.local` file in the root directory:
 
-# 3. Run the dev server
+```env
+OPENAI_API_KEY=your_api_key_here
+```
+
+Then start the development server:
+
+```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open `http://localhost:3000` in your browser.
 
-### Environment variables
 
-| Variable         | Required | Description                                                                 |
-| ---------------- | -------- | --------------------------------------------------------------------------- |
-| `OPENAI_API_KEY` | No       | Server-side OpenAI key. If omitted, the app runs in demo mode with samples. |
+## Why I Built This
 
-`.env.local` is git-ignored — never commit your real key.
+I wanted to explore a problem most people experience but usually ignore: we agree to digital contracts all the time without really knowing what we're agreeing to.
 
-## Build
+This project started with a simple question:
 
-```bash
-npm run build
-```
+> **What if you could see the parts that actually matter before clicking “I agree”?**
 
-## Deploy to Vercel
+I built the MVP around that moment instead of trying to summarize every line of an agreement.
 
-1. Push this repository to GitHub.
-2. Import the repository into [Vercel](https://vercel.com/new).
-3. (Optional) Add `OPENAI_API_KEY` as an Environment Variable in the project settings to enable live analysis. Without it, the deployed app still loads and works in demo mode.
-4. Deploy.
+## Future Ideas
+
+This is intentionally a small MVP. Some ideas for future versions include:
+
+* Automatically detecting Terms & Conditions during signup
+* Browser extension support
+* Saving agreements you've accepted
+* Detecting when a company changes its terms
+* Showing exactly what changed between versions
+* Notifications when an agreement you previously accepted changes
+* More detailed privacy controls and explanations
 
 ## Disclaimer
 
-PlainTerms is an educational transparency tool. It summarizes and highlights portions of the text you provide and **does not provide legal advice**. Always consult a qualified professional for legal questions.
+PlainTerms is an informational tool designed to make Terms & Conditions and Privacy Policies easier to understand.
+
+It does not provide legal advice and should not be treated as a substitute for advice from a qualified legal professional.
+
+
+
+Built as a consumer transparency project.
+
