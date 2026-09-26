@@ -46,10 +46,19 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ categories: parsed.data.categories, demo: false })
   } catch (error) {
-    console.log("[v0] analyze error:", error instanceof Error ? error.message : error)
+    const message = error instanceof Error ? error.message : String(error)
+    console.log("[plain-terms] analyze error:", message)
+
+    // Surface configuration/quota problems distinctly so they stop looking
+    // like random transient failures.
+    const isQuota = /insufficient_quota|quota|billing|rate limit/i.test(message)
     return NextResponse.json(
-      { error: "Something went wrong while analyzing the policy. Please try again." },
-      { status: 500 },
+      {
+        error: isQuota
+          ? "Analysis is temporarily unavailable. Please try again later."
+          : "Something went wrong while analyzing the policy. Please try again.",
+      },
+      { status: isQuota ? 503 : 500 },
     )
   }
 }

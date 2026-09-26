@@ -41,6 +41,11 @@ export async function analyzePolicy(policyText: string): Promise<AnalysisResult>
     system: SYSTEM_PROMPT,
     prompt: `Analyze the following policy text:\n\n"""\n${policyText}\n"""`,
     output: Output.object({ schema: analysisSchema }),
+    // Fail faster and stay under the route's 60s maxDuration: the default
+    // retry policy spends ~25s on retryable API errors (quota, overload),
+    // which is what made the UI hang before showing an error.
+    maxRetries: 1,
+    abortSignal: AbortSignal.timeout(50_000),
   })
 
   return { categories: normalizeCategories(output.categories) }
